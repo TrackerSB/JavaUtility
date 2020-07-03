@@ -24,7 +24,7 @@ tasks.withType(JavaCompile) {
 java {
     modularity.inferModulePath = true
     withSourcesJar()
-    withJavadocJar()
+    // withJavadocJar() // FIXME JavaDoc not valid
 }
 
 javafx {
