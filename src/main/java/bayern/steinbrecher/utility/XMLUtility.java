@@ -1,4 +1,4 @@
-package bayern.steinbrecher.checkedElements.utility;
+package bayern.steinbrecher.utility;
 
 import java.io.IOException;
 import java.io.StringReader;
