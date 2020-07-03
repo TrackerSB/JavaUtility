@@ -11,8 +11,7 @@ import java.util.regex.Pattern;
 import org.xml.sax.SAXException;
 
 /**
- * Contains methods for checking some Sepa Direct Debit attributes which are especially needed by {@code Originator} and
- * {@code SepaPain00800302XMLGenerator}.
+ * Contains methods for checking some Sepa Direct Debit attributes.
  *
  * @author Stefan Huber
  * @since 0.1
