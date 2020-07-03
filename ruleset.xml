@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<ruleset name="Green2 ruleset"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
+    <description>
+        Green2 customized ruleset.
+    </description>
+
+    <!-- Java Best practices -->
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="GuardLogStatement" /> <!-- java.util.logging.Logger do not need to be guarded -->
+    </rule>
+
+    <!-- Java Codestyle -->
+    <rule ref="category/java/codestyle.xml">
+        <exclude name="AbstractNaming" /> <!-- Deprecated -->
+        <exclude name="AtLeastOneConstructor" />
+        <exclude name="CommentDefaultAccessModifier" />
+        <exclude name="ForLoopsMustUseBraces" /> <!-- Deprecated -->
+        <exclude name="IfElseStmtsMustUseBraces" /> <!-- Deprecated -->
+        <exclude name="IfStmtsMustUseBraces" /> <!-- Deprecated -->
+        <exclude name="LocalVariableCouldBeFinal" />
+        <exclude name="MethodArgumentCouldBeFinal" />
+        <exclude name="WhileLoopsMustUseBraces" /> <!-- Deprecated -->
+    </rule>
+    <rule ref="category/java/codestyle.xml/ClassNamingConventions">
+        <properties>
+            <property name="utilityClassPattern"
+                      value="[A-Z][a-zA-Z0-9]+(Utils?|Helper|Utility|Generator)" />
+            <property name="violationSuppressXPath"
+                      value="(.[ends-with(@Image,'Constants')])" /> <!-- FIXME Force to suppress only for inner classes. -->
+        </properties>
+    </rule>
+    <rule ref="category/java/codestyle.xml/LongVariable">
+        <properties>
+            <property name="minimum"
+                      value="25" />
+        </properties>
+    </rule>
+    <rule ref="category/java/codestyle.xml/TooManyStaticImports">
+        <properties>
+            <property name="maximumStaticImports"
+                      value="0" />
+        </properties>
+    </rule>
+
+    <!-- Java Design -->
+    <rule ref="category/java/design.xml">
+        <exclude name="LawOfDemeter" />
+        <exclude name="LoosePackageCoupling" /> <!-- FIXME: How to use this rule correctly? -->
+        <exclude name="ModifiedCyclomaticComplexity" /> <!-- Deprecated -->
+        <exclude name="NcssConstructorCount" /> <!-- Deprecated -->
+        <exclude name="NcssMethodCount" /> <!-- Deprecated -->
+        <exclude name="NcssTypeCount" /> <!-- Deprecated -->
+        <exclude name="StdCyclomaticComplexity" /> <!-- Deprecated -->
+    </rule>
+    <rule ref="category/java/design.xml/NcssCount">
+        <properties>
+            <property name="methodReportLevel" value="60" /> <!-- 60 is PMD's default value -->
+        </properties>
+    </rule>
+
+    <!-- Java Documentation -->
+    <rule ref="category/java/documentation.xml" />
+    <rule ref="category/java/documentation.xml/CommentRequired">
+        <properties>
+            <property name="fieldCommentRequirement"
+                      value="Ignored" />
+            <property name="accessorCommentRequirement"
+                      value="Required" />
+        </properties>
+    </rule>
+    <rule ref="category/java/documentation.xml/CommentSize">
+        <properties>
+            <property name="maxLineLength"
+                      value="120" />
+            <property name="maxLines"
+                      value="16" /> <!-- NOTE: The default header Gpl v3 has 16 lines -->
+        </properties>
+    </rule>
+
+    <!-- Java Error Prone -->
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="BeanMembersShouldSerialize" />
+        <exclude name="CallSuperLast" />
+        <exclude name="DataflowAnomalyAnalysis" /> <!-- NOTE May include it at some point again -->
+        <!-- See https://github.com/pmd/pmd/issues/1304#issuecomment-412925368 -->
+    </rule>
+    <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
+        <properties>
+            <property name="skipAnnotations" value="true" />
+        </properties>
+    </rule>
+    <rule ref="category/java/errorprone.xml/ProperLogger">
+        <properties>
+            <property name="staticLoggerName" value="LOGGER" />
+        </properties>
+    </rule>
+
+    <!-- Java Multithreading -->
+    <rule ref="category/java/multithreading.xml" />
+
+    <!-- Java Performance -->
+    <rule ref="category/java/performance.xml" />
+
+    <!-- Java Security -->
+    <rule ref="category/java/security.xml" />
+
+    <!-- POM Error Prone -->
+    <!-- <rule ref="category/pom/errorprone.xml" /> -->
+</ruleset>
