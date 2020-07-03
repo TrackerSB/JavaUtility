@@ -62,7 +62,7 @@ public final class BindingUtility {
      * Reduces given stream concatenating the elements of the given stream using {@code or}.
      *
      * @param observableValues The stream which elements to concatenate.
-     * @return The resulting {@code BooleanBinding}.
+     * @return The resulting {@link BooleanBinding}.
      */
     public static BooleanBinding reduceOr(Stream<? extends ObservableBooleanValue> observableValues) {
         return observableValues.reduce(FALSE_BINDING, BooleanBinding::or, BooleanBinding::or);
@@ -72,7 +72,7 @@ public final class BindingUtility {
      * Reduces given stream concatenating the elements of the given stream using {@code or}.
      *
      * @param observableValues The stream which elements to concatenate.
-     * @return The resulting {@code BooleanBinding}.
+     * @return The resulting {@link BooleanBinding}.
      */
     public static BooleanBinding reduceAnd(Stream<? extends ObservableBooleanValue> observableValues) {
         return observableValues.reduce(TRUE_BINDING, BooleanBinding::and, BooleanBinding::and);

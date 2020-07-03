@@ -44,7 +44,7 @@ public final class XMLUtility {
      *
      * @param xml The XML content to check.
      * @param schema The XSD schema to validate against.
-     * @return An {@link Optional} containing the error output if {@code xml} is erroneous. If {@link Optional#empty()}
+     * @return An {@link Optional} containing the error output if {@code XML} is erroneous. If {@link Optional#empty()}
      * is returned the XML does not contain errors but it may still contain warnings. If so these are logged.
      * @throws SAXException If any parse error occurs.
      * @throws IOException If any I/O error occurs.

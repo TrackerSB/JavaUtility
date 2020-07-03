@@ -44,11 +44,11 @@ public final class SepaUtility {
     public static final int MAX_CHAR_NAME_FIELD = 70;
 
     /**
-     * Length of countrycode (CC);
+     * Length of country code (CC);
      */
     private static final int SEPA_CC_LENGTH = 2;
     /**
-     * Length of countrycode (CC) and checksum together.
+     * Length of country code (CC) and checksum together.
      */
     private static final int SEPA_CC_CHECKSUM_LENGTH = SEPA_CC_LENGTH + 2;
     private static final int SEPA_MIN_LENGTH = SEPA_CC_CHECKSUM_LENGTH + 1;
@@ -59,7 +59,7 @@ public final class SepaUtility {
     private static final int SEPA_SHIFT_CC = 10;
     private static final int IBAN_CHECKSUM_MODULO = 97;
     /**
-     * Regex describing a possible valid IBAN. (Checksum of the IBAN is not checked by this regex)
+     * Regex describing a possible valid IBAN (the checksum of the IBAN is not checked by this regex).
      */
     public static final String IBAN_REGEX
             = "[A-Z]{" + SEPA_CC_LENGTH + "}\\d{2," + (MAX_CHAR_IBAN - SEPA_CC_LENGTH) + "}";
@@ -162,10 +162,10 @@ public final class SepaUtility {
     }
 
     /**
-     * Returns a {@link String} representation of the given {@code dateTime} which is valid for SEPA Direct Debits.
+     * Returns a {@link String} representation of the given {@link LocalDateTime} which is valid for SEPA Direct Debits.
      *
      * @param dateTime The date to convert.
-     * @return The valid representation of the given {@code dateTime}.
+     * @return The valid representation of the given {@link LocalDateTime}.
      */
     public static String getSepaDate(LocalDateTime dateTime) {
         /*
@@ -176,10 +176,10 @@ public final class SepaUtility {
     }
 
     /**
-     * Returns a {@link String} representation of the given {@code date} which is valid for SEPA Direct Debits.
+     * Returns a {@link String} representation of the given {@link LocalDate} which is valid for SEPA Direct Debits.
      *
      * @param date The date to convert.
-     * @return The valid representation of the given {@code date}.
+     * @return The valid representation of the given {@link LocalDate}.
      */
     public static String getSepaDate(LocalDate date) {
         /*
@@ -193,8 +193,9 @@ public final class SepaUtility {
      * Checks whether the given {@link String} contains valid SEPA DD content.
      *
      * @param xml The XML content to check.
-     * @return An {@link Optional} containing the error output if {@code xml} is erroneous. If {@link Optional#empty()}
-     * is returned the XML does not contain errors but it may still contain warnings. If so these are logged.
+     * @return An {@link Optional} containing the error output if the {@code XML} is erroneous. If
+     * {@link Optional#empty()} is returned the XML does not contain errors but it may still contain warnings. If so
+     * these are logged.
      * @throws SAXException If any parse error occurs.
      * @throws IOException If any I/O error occurs.
      * @see XMLUtility#isValidXML(java.lang.String, java.net.URL)
