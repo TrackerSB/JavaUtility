@@ -55,9 +55,9 @@ publishing {
     publications {
         mavenScreenSwitcher(MavenPublication) {
             pom {
-                name = "CheckedElements"
-                description = "A collection of JavaFX control elements with extended validation mechanisms."
-                url = "https://github.com/TrackerSB/CheckedElements"
+                name = "Utility"
+                description = "A collection classes which I use over multiple projects and which are not worth for their own library."
+                url = "https://github.com/TrackerSB/JavaUtility"
                 licenses {
                     license {
                         name = "The Beer-Ware License (Revision 42)"
@@ -71,8 +71,8 @@ publishing {
                     }
                 }
                 scm {
-                    connection = "scm:git:git://github.com/TrackerSB/CheckedElements.git"
-                    developerConnection = "scm:git:ssh://github.com/TrackerSB/CheckedElements.git"
+                    connection = "scm:git:git://github.com/TrackerSB/JavaUtility.git"
+                    developerConnection = "scm:git:ssh://github.com/TrackerSB/JavaUtility.git"
                     url = "https://steinbrecher.bayern"
                 }
             }
