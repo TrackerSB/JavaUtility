@@ -53,7 +53,7 @@ publishing {
         }
     }
     publications {
-        mavenScreenSwitcher(MavenPublication) {
+        library(MavenPublication) {
             pom {
                 name = "Utility"
                 description = "A collection classes which I use over multiple projects and which are not worth for their own library."
@@ -83,5 +83,5 @@ publishing {
 
 signing {
     useGpgCmd()
-    sign publishing.publications.mavenScreenSwitcher
+    sign publishing.publications.library
 }
