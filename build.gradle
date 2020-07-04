@@ -13,6 +13,7 @@ repositories {
 }
 
 dependencies {
+    implementation "org.jetbrains:annotations:19.0.0"
 }
 
 compileJava.options.encoding = "UTF-8"
@@ -30,7 +31,9 @@ java {
 javafx {
     version = "14"
     modules = [
-            "javafx.base"
+            "javafx.base",
+            "javafx.controls",
+            "javafx.graphics"
     ]
 }
 
