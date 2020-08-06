@@ -60,7 +60,7 @@ publishing {
             pom {
                 name = "Utility"
                 description = "A collection classes which I use over multiple projects and which are not worth for their own library."
-                url = "https://github.com/TrackerSB/JavaUtility"
+                url = "https://steinbrecher.bayern"
                 licenses {
                     license {
                         name = "The Beer-Ware License (Revision 42)"
@@ -76,7 +76,7 @@ publishing {
                 scm {
                     connection = "scm:git:git://github.com/TrackerSB/JavaUtility.git"
                     developerConnection = "scm:git:ssh://github.com/TrackerSB/JavaUtility.git"
-                    url = "https://steinbrecher.bayern"
+                    url = "https://github.com/TrackerSB/JavaUtility"
                 }
             }
             from components.java
