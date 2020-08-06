@@ -1,5 +1,5 @@
 module bayern.steinbrecher.Utility {
-    exports bayern.steinbrecher.utility;
+    exports bayern.steinbrecher.javaUtility;
 
     requires java.logging;
     requires java.xml;

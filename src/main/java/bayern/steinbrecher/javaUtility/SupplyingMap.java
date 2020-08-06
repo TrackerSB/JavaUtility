@@ -1,4 +1,4 @@
-package bayern.steinbrecher.utility;
+package bayern.steinbrecher.javaUtility;
 
 import java.util.HashMap;
 import java.util.Objects;
