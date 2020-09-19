@@ -6,5 +6,6 @@ module bayern.steinbrecher.Utility {
     requires javafx.base;
     requires javafx.controls;
     requires javafx.graphics;
-    requires org.jetbrains.annotations;
+
+    requires static org.jetbrains.annotations;
 }
