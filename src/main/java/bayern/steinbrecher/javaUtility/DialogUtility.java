@@ -52,7 +52,7 @@ public final class DialogUtility {
 
     @NotNull
     private static ImageView loadIcon(@NotNull String path) {
-        Image image = new Image(path, SIZE, SIZE, true, true);
+        Image image = new Image(DialogUtility.class.getResource(path).getPath(), SIZE, SIZE, true, true);
         ImageView imageView = new ImageView(image);
         imageView.setSmooth(true);
         return imageView;
