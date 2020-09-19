@@ -37,7 +37,7 @@ public final class DialogUtility {
     public static final int SIZE = 15;
     private static final Logger LOGGER = Logger.getLogger(DialogUtility.class.getName());
     private static final ResourceBundle RESOURCE_BUNDLE
-            = ResourceBundle.getBundle("bayern.steinbrecher.utility.dialog");
+            = ResourceBundle.getBundle("bayern.steinbrecher.javaUtility.dialog");
     private static final int NUMBER_USED_PARAMETERS = 3;
     private static final Map<AlertType, ImageView> ICONS = Map.of(
             AlertType.CONFIRMATION, loadIcon("checked.png"),
