@@ -83,9 +83,7 @@ public final class DialogUtility {
             }
         }
 
-        // Scene scene = alert.getDialogPane().getScene();
-        // scene.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET); // FIXME Is this required?
-        alert.setGraphic(ICONS.getOrDefault(alert.getAlertType(), null));
+        Platform.runLater(() ->alert.setGraphic(ICONS.getOrDefault(alert.getAlertType(), null)));
 
         return alert;
     }
