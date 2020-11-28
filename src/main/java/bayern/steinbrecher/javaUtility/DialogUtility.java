@@ -23,6 +23,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -206,12 +207,23 @@ public final class DialogUtility {
         if (Platform.isFxApplicationThread()) {
             result = alert.showAndWait();
         } else {
-            FutureTask<Optional<ButtonType>> showAndWaitTask = new FutureTask<>(alert::showAndWait);
-            Platform.runLater(showAndWaitTask);
+            AtomicBoolean dialogClosed = new AtomicBoolean(false);
+            Platform.runLater(() -> {
+                alert.showAndWait();
+                dialogClosed.set(true);
+                synchronized (dialogClosed) {
+                    dialogClosed.notifyAll();
+                }
+            });
             try {
-                result = showAndWaitTask.get();
-            } catch (InterruptedException | ExecutionException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+                synchronized (dialogClosed) {
+                    while (!dialogClosed.getAcquire()) {
+                        dialogClosed.wait();
+                    }
+                }
+                result = Optional.of(alert.getResult());
+            } catch (InterruptedException ex) {
+                LOGGER.log(Level.SEVERE, "Waiting for the dialog to be closed got interrupted", ex);
                 result = Optional.empty();
             }
         }
