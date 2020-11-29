@@ -49,7 +49,7 @@ public final class IOUtility {
                 try {
                     Optional<CharBuffer> inputChunk = readTask.get(1, TimeUnit.SECONDS);
                     if(inputChunk.isPresent()){
-                        output.append(inputChunk);
+                        output.append(inputChunk.get());
                     } else {
                         retrievingData = false;
                     }
