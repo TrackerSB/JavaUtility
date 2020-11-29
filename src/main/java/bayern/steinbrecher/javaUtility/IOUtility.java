@@ -27,8 +27,9 @@ public final class IOUtility {
     public static String readAll(InputStream inputStream, Charset charset) throws IOException {
         StringBuilder output = new StringBuilder();
         try (ReadableByteChannel rbc = Channels.newChannel(inputStream)) {
-           boolean retrievingData = true;
-            while(retrievingData) {
+            boolean isSecondTimeoutInARow = false;
+            boolean retrievingData = true;
+            while (retrievingData) {
                 Task<Optional<CharBuffer>> readTask = new Task<>() {
                     @Override
                     protected Optional<CharBuffer> call() throws Exception {
@@ -48,15 +49,26 @@ public final class IOUtility {
                 new Thread(readTask)
                         .start();
                 try {
-                    Optional<CharBuffer> inputChunk = readTask.get(1, TimeUnit.SECONDS);
-                    if(inputChunk.isPresent()){
+                    Optional<CharBuffer> inputChunk = readTask.get(3, TimeUnit.SECONDS);
+                    if (inputChunk.isPresent()) {
                         output.append(inputChunk.get());
+                        isSecondTimeoutInARow = false;
                     } else {
                         retrievingData = false;
                     }
-                } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+                } catch (InterruptedException | ExecutionException ex) {
                     LOGGER.log(Level.WARNING, "Stopped reading the input stream", ex);
                     retrievingData = false;
+                } catch (TimeoutException ex) {
+                    if (isSecondTimeoutInARow) {
+                        LOGGER.log(Level.WARNING, "Stopped reading the input stream. "
+                                + "Input stream doesn't seem to yield further data. "
+                                + "Returned data may be incomplete.", ex);
+                        retrievingData = false;
+                    } else {
+                        LOGGER.log(Level.WARNING, "Input stream didn't yield further data yet. Retrying.", ex);
+                        isSecondTimeoutInARow = true;
+                    }
                 }
             }
         }
