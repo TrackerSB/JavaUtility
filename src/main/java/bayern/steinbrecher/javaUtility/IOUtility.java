@@ -45,7 +45,8 @@ public final class IOUtility {
                         return Optional.ofNullable(received);
                     }
                 };
-                readTask.run();
+                new Thread(readTask)
+                        .start();
                 try {
                     Optional<CharBuffer> inputChunk = readTask.get(1, TimeUnit.SECONDS);
                     if(inputChunk.isPresent()){
