@@ -84,6 +84,7 @@ public final class IOUtility {
 
     /**
      * Based on https://stackoverflow.com/a/47554723/4863098
+     * @return A pair of output and error stream content
      */
     public static Pair<String, String> readChannelContinuously(ChannelExec channel) throws IOException {
         StringBuilder outputBuffer = new StringBuilder();
