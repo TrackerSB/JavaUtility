@@ -28,8 +28,8 @@ public final class IOUtility {
 
     /**
      * WARNING This method is neither geared to read continues output of interactive shells nor remote shells nor very
-     * large outputs. In these cases consider using {@link #readChannelContinuously(ChannelExec)}. However, this method is
-     * way faster in reading than {@link #readChannelContinuously(ChannelExec)}.
+     * large outputs. In these cases consider using {@link #readChannelContinuously(ChannelExec, Charset)}. However,
+     * this method is way faster in reading than {@link #readChannelContinuously(ChannelExec, Charset)}.
      */
     public static String readAll(InputStream inputStream, Charset charset) throws IOException {
         StringBuilder output = new StringBuilder();
@@ -84,9 +84,11 @@ public final class IOUtility {
 
     /**
      * Based on https://stackoverflow.com/a/47554723/4863098
+     *
      * @return A pair of output and error stream content
      */
-    public static Pair<String, String> readChannelContinuously(ChannelExec channel) throws IOException {
+    public static Pair<String, String> readChannelContinuously(ChannelExec channel, Charset charset)
+            throws IOException {
         StringBuilder outputBuffer = new StringBuilder();
         StringBuilder errorBuffer = new StringBuilder();
         InputStream inStream = channel.getInputStream();
@@ -98,14 +100,14 @@ public final class IOUtility {
                 if (i < 0) {
                     break;
                 }
-                outputBuffer.append(new String(tmp, 0, i));
+                outputBuffer.append(new String(tmp, 0, i, charset));
             }
             while (errStream.available() > 0) {
                 int i = errStream.read(tmp, 0, DEFAULT_BUFFER_SIZE);
                 if (i < 0) {
                     break;
                 }
-                errorBuffer.append(new String(tmp, 0, i));
+                errorBuffer.append(new String(tmp, 0, i, charset));
             }
             if (channel.isClosed()) {
                 if ((inStream.available() > 0) || (errStream.available() > 0)) {
