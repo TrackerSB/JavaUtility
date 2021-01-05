@@ -221,7 +221,7 @@ public final class DialogUtility {
                         dialogClosed.wait();
                     }
                 }
-                result = Optional.of(alert.getResult());
+                result = Optional.ofNullable(alert.getResult());
             } catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, "Waiting for the dialog to be closed got interrupted", ex);
                 result = Optional.empty();
