@@ -29,14 +29,15 @@ import java.util.logging.Logger;
 
 /**
  * @author Stefan Huber
+ * @since 0.18
  */
-public final class DialogUtility {
+public final class DialogGenerator {
 
     /**
      * Width/height of the alert type identifying icon.
      */
     public static final int SIZE = 15;
-    private static final Logger LOGGER = Logger.getLogger(DialogUtility.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DialogGenerator.class.getName());
     private static final ResourceBundle RESOURCE_BUNDLE
             = ResourceBundle.getBundle("bayern.steinbrecher.javaUtility.dialog");
     private static final int NUMBER_USED_PARAMETERS = 3;
@@ -46,14 +47,19 @@ public final class DialogUtility {
             AlertType.WARNING, loadIcon("warning.png"),
             AlertType.ERROR, loadIcon("error.png")
     );
+    private final String stylesheetPath;
 
-    private DialogUtility() {
-        throw new UnsupportedOperationException("Construction of an instance is not allowed.");
+    public DialogGenerator() {
+        this(null);
+    }
+
+    public DialogGenerator(@Nullable String stylesheetPath) {
+        this.stylesheetPath = stylesheetPath;
     }
 
     @NotNull
     private static ImageView loadIcon(@NotNull String path) {
-        Image image = new Image(DialogUtility.class.getResource(path).getPath(), SIZE, SIZE, true, true);
+        Image image = new Image(DialogGenerator.class.getResource(path).getPath(), SIZE, SIZE, true, true);
         ImageView imageView = new ImageView(image);
         imageView.setSmooth(true);
         return imageView;
@@ -66,7 +72,7 @@ public final class DialogUtility {
      * @return The newly created {@link Alert}.
      */
     @NotNull
-    private static Alert getAlert(@NotNull Callable<Alert> alertCreation) throws DialogCreationException {
+    private Alert getAlert(@NotNull Callable<Alert> alertCreation) throws DialogCreationException {
         Alert alert;
         if (Platform.isFxApplicationThread()) {
             try {
@@ -84,8 +90,13 @@ public final class DialogUtility {
             }
         }
 
-        Platform.runLater(() ->alert.setGraphic(ICONS.getOrDefault(alert.getAlertType(), null)));
+        Platform.runLater(() -> alert.setGraphic(ICONS.getOrDefault(alert.getAlertType(), null)));
 
+        if (stylesheetPath != null) {
+            alert.getDialogPane()
+                    .getStylesheets()
+                    .addAll(stylesheetPath);
+        }
         return alert;
     }
 
@@ -98,11 +109,11 @@ public final class DialogUtility {
      *                  value according to {@link Alert}. If you specify more elements they will be ignored.
      * @return The created {@link Alert}.
      * @throws DialogCreationException Thrown if the creation of the dialog got interrupted on the JavaFX main
-     * application thread or if the internal dialog creation process is erroneous.
+     *                                 application thread or if the internal dialog creation process is erroneous.
      */
     @NotNull
     @SuppressWarnings({"fallthrough", "PMD.MissingBreakInSwitch"})
-    public static Alert createConfirmationAlert(@NotNull Alert.AlertType alertType, @NotNull String... args)
+    public Alert createConfirmationAlert(@NotNull Alert.AlertType alertType, @NotNull String... args)
             throws DialogCreationException {
         for (String arg : args) {
             Objects.requireNonNull(arg);
@@ -136,14 +147,14 @@ public final class DialogUtility {
     }
 
     @NotNull
-    public static Alert createInteractiveAlert(
+    public Alert createInteractiveAlert(
             @NotNull Alert.AlertType type, @Nullable String message, @NotNull ButtonType... buttons)
             throws DialogCreationException {
         return getAlert(() -> new Alert(type, message, buttons));
     }
 
     @NotNull
-    public static Alert createStacktraceAlert(@NotNull Throwable cause, @NotNull String... args)
+    public Alert createStacktraceAlert(@NotNull Throwable cause, @NotNull String... args)
             throws DialogCreationException {
         Alert alert = createConfirmationAlert(Alert.AlertType.ERROR, args);
 
@@ -166,22 +177,22 @@ public final class DialogUtility {
     }
 
     @NotNull
-    public static Alert createWarningAlert(@NotNull String... args) throws DialogCreationException {
+    public Alert createWarningAlert(@NotNull String... args) throws DialogCreationException {
         return createConfirmationAlert(Alert.AlertType.WARNING, args);
     }
 
     @NotNull
-    public static Alert createErrorAlert(@NotNull String... args) throws DialogCreationException {
+    public Alert createErrorAlert(@NotNull String... args) throws DialogCreationException {
         return createConfirmationAlert(Alert.AlertType.ERROR, args);
     }
 
     @NotNull
-    public static Alert createInfoAlert(@NotNull String... args) throws DialogCreationException {
+    public Alert createInfoAlert(@NotNull String... args) throws DialogCreationException {
         return createConfirmationAlert(Alert.AlertType.INFORMATION, args);
     }
 
     @NotNull
-    public static Alert createMessageAlert(@Nullable String message, @NotNull String... args)
+    public Alert createMessageAlert(@Nullable String message, @NotNull String... args)
             throws DialogCreationException {
         Alert alert = createConfirmationAlert(Alert.AlertType.INFORMATION, args);
 
