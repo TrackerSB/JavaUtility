@@ -11,6 +11,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.stage.Modality;
+import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,14 +50,21 @@ public final class DialogGenerator {
             AlertType.WARNING, loadIcon("warning.png"),
             AlertType.ERROR, loadIcon("error.png")
     );
-    private final String stylesheetPath;
+    private final Window defaultOwner;
+    private final Modality defaultModality;
+    private final StageStyle defaultStageStyle;
+    private final String defaultStylesheetPath;
 
     public DialogGenerator() {
-        this(null);
+        this(null, Modality.APPLICATION_MODAL, StageStyle.UTILITY, null);
     }
 
-    public DialogGenerator(@Nullable String stylesheetPath) {
-        this.stylesheetPath = stylesheetPath;
+    public DialogGenerator(@Nullable Window defaultOwner, @NotNull Modality defaultModality,
+                           @NotNull StageStyle defaultStageStyle, @Nullable String defaultStylesheetPath) {
+        this.defaultOwner = defaultOwner;
+        this.defaultModality = defaultModality;
+        this.defaultStageStyle = defaultStageStyle;
+        this.defaultStylesheetPath = defaultStylesheetPath;
     }
 
     @NotNull
@@ -92,10 +102,13 @@ public final class DialogGenerator {
 
         Platform.runLater(() -> alert.setGraphic(ICONS.getOrDefault(alert.getAlertType(), null)));
 
-        if (stylesheetPath != null) {
+        alert.initOwner(defaultOwner);
+        alert.initModality(defaultModality);
+        alert.initStyle(defaultStageStyle);
+        if (defaultStylesheetPath != null) {
             alert.getDialogPane()
                     .getStylesheets()
-                    .addAll(stylesheetPath);
+                    .addAll(defaultStylesheetPath);
         }
         return alert;
     }
