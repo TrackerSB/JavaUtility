@@ -138,7 +138,7 @@ public final class IOUtility {
     /**
      * @since 0.18
      */
-    public void writeCSV(Path outputPath, Iterable<Iterable<String>> rowMajorContent, CSVFormat format)
+    public static void writeCSV(Path outputPath, Iterable<Iterable<String>> rowMajorContent, CSVFormat format)
             throws IOException {
         try (Writer writer = new FileWriter(outputPath.toFile())) {
             if (format.isWithBOM()) {
