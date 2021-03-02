@@ -1,5 +1,9 @@
 package bayern.steinbrecher.javaUtility;
 
+/**
+ * @author Stefan Huber
+ * @since 0.18
+ */
 public class DialogCreationException extends Exception {
     public DialogCreationException() {
         super();

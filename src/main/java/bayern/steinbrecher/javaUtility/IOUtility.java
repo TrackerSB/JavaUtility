@@ -18,6 +18,10 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * @author Stefan Huber
+ * @since 0.1
+ */
 public final class IOUtility {
     private static final Logger LOGGER = Logger.getLogger(IOUtility.class.getName());
     private static final int DEFAULT_BUFFER_SIZE = 1024;
