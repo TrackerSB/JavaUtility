@@ -4,13 +4,16 @@ import bayern.steinbrecher.jsch.ChannelExec;
 import javafx.concurrent.Task;
 import javafx.util.Pair;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -130,5 +133,33 @@ public final class IOUtility {
             }
         }
         return new Pair<>(outputBuffer.toString(), errorBuffer.toString());
+    }
+
+    /**
+     * @since 0.18
+     */
+    public void writeCSV(Path outputPath, Iterable<Iterable<String>> rowMajorContent, CSVFormat format)
+            throws IOException {
+        try (Writer writer = new FileWriter(outputPath.toFile())) {
+            if (format.isWithBOM()) {
+                /* NOTE 2021-03-02
+                 * FEFF because this is the Unicode char represented by the UTF-8 byte order mark (EF BB BF)
+                 * See https://www.rgagnon.com/javadetails/java-handle-utf8-file-with-bom.html
+                 */
+                writer.write('\uFEFF');
+            }
+
+            for (Iterable<String> row : rowMajorContent) {
+                boolean isFirstCell = true;
+                for (String cell : row) {
+                    if (!isFirstCell) {
+                        writer.write(format.getSeparator());
+                    }
+                    writer.write(cell);
+                    isFirstCell = false;
+                }
+                writer.write('\n');
+            }
+        }
     }
 }
