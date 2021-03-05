@@ -140,7 +140,7 @@ public final class IOUtility {
      */
     public static void writeCSV(Path outputPath, Iterable<? extends Iterable<String>> rowMajorContent, CSVFormat format)
             throws IOException {
-        try (Writer writer = new FileWriter(outputPath.toFile())) {
+        try (Writer writer = new FileWriter(outputPath.toFile(), format.getEncoding())) {
             if (format.isWithBOM()) {
                 /* NOTE 2021-03-02
                  * FEFF because this is the Unicode char represented by the UTF-8 byte order mark (EF BB BF)
