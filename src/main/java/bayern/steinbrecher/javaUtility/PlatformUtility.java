@@ -2,7 +2,6 @@ package bayern.steinbrecher.javaUtility;
 
 import javafx.application.Platform;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -17,23 +16,29 @@ public final class PlatformUtility {
         throw new UnsupportedOperationException("The construction of instances is prohibited");
     }
 
-    public static <R> R runLaterBlocking(Callable<R> task) throws Exception {
+    @SuppressWarnings("unchecked")
+    public static <R, E extends Exception> R runLaterBlocking(
+            ExceptionalCallable<R, E> task, Class<E> exceptionTypeDummy) throws E {
         AtomicReference<R> result = new AtomicReference<>();
         if (Platform.isFxApplicationThread()) {
-            result.set(task.call());
+            result.set(task.call(exceptionTypeDummy));
         } else {
             CountDownLatch countDown = new CountDownLatch(1);
-            AtomicReference<Exception> exception = new AtomicReference<>();
+            AtomicReference<E> exception = new AtomicReference<>();
             Platform.runLater(() -> {
                 try {
-                    result.set(task.call());
+                    result.set(task.call(exceptionTypeDummy));
                 } catch (Exception ex) {
-                    exception.set(ex);
+                    exception.set((E) ex);
                 } finally {
                     countDown.countDown();
                 }
             });
-            countDown.await();
+            try {
+                countDown.await();
+            } catch (InterruptedException ex) {
+                throw new UnhandledException(ex);
+            }
             if (exception.get() != null) {
                 throw exception.get();
             }
@@ -48,23 +53,27 @@ public final class PlatformUtility {
      * ensure that all GUI components remain responsive.
      * This function can be run on any thread.
      */
-    public static <R, S> void runLaterThriftily(
-            Callable<R> preNonFxTask, Function<R, S> fxTask, Consumer<S> postNonFxTask) throws Exception {
-        AtomicReference<Exception> exception = new AtomicReference<>();
-        Runnable nonFxTask = () -> {
-            try {
-                R preTaskResult = preNonFxTask.call();
-                S fxTaskResult = runLaterBlocking(() -> fxTask.apply(preTaskResult));
-                postNonFxTask.accept(fxTaskResult);
-            } catch (Exception ex) {
-                exception.set(ex);
-            }
+    @SuppressWarnings("unchecked")
+    public static <R, S, E extends Exception> void runLaterThriftily(
+            ExceptionalCallable<R, E> preNonFxTask, Function<R, S> fxTask, Consumer<S> postNonFxTask,
+            Class<E> exceptionTypeDummy) throws E {
+        AtomicReference<E> exception = new AtomicReference<>();
+        ExceptionalCallable<Void, E> nonFxTask = () -> {
+            R preTaskResult = preNonFxTask.call(exceptionTypeDummy);
+            S fxTaskResult = runLaterBlocking(() -> fxTask.apply(preTaskResult), exceptionTypeDummy);
+            postNonFxTask.accept(fxTaskResult);
+            return null;
         };
         if (Platform.isFxApplicationThread()) {
-            new Thread(nonFxTask)
-                    .start();
+            new Thread(() -> {
+                try {
+                    nonFxTask.call(exceptionTypeDummy);
+                } catch (Exception ex) {
+                    exception.set((E) ex); // Per design of ExceptionalCallable#call() this cannot be another exception
+                }
+            }).start();
         } else {
-            nonFxTask.run();
+            nonFxTask.call(exceptionTypeDummy);
         }
         if (exception.get() != null) {
             throw exception.get();
