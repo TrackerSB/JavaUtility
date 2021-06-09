@@ -14,6 +14,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -155,7 +156,7 @@ public final class IOUtility {
                     if (!isFirstCell) {
                         writer.write(format.getSeparator());
                     }
-                    writer.write(cell);
+                    writer.write(Objects.requireNonNullElse(cell, ""));
                     isFirstCell = false;
                 }
                 writer.write('\n');
