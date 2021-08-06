@@ -1,5 +1,7 @@
 package bayern.steinbrecher.javaUtility;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author Stefan Huber
  * @since 0.18
@@ -15,7 +17,7 @@ public interface ExceptionalCallable<V, E extends Exception> {
      * supposed to throw.
      */
     @SuppressWarnings("unchecked")
-    default V call(Class<E> exceptionTypeDummy) throws E {
+    default V call(@NotNull Class<E> exceptionTypeDummy) throws E {
         try {
             return callUnsafe();
         } catch (Exception ex) {
