@@ -2,6 +2,7 @@ package bayern.steinbrecher.javaUtility;
 
 import javafx.application.Platform;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -19,7 +20,7 @@ public final class PlatformUtility {
 
     @SuppressWarnings("unchecked")
     public static <R, E extends Exception> R runLaterBlocking(
-            @NotNull ExceptionalCallable<R, E> task, @NotNull Class<E> exceptionTypeDummy) throws E {
+            @NotNull ExceptionalCallable<R, E> task, @Nullable Class<E> exceptionTypeDummy) throws E {
         AtomicReference<R> result = new AtomicReference<>();
         if (Platform.isFxApplicationThread()) {
             result.set(task.call(exceptionTypeDummy));
@@ -57,7 +58,7 @@ public final class PlatformUtility {
     @SuppressWarnings("unchecked")
     public static <R, S, E extends Exception> void runLaterThriftily(
             @NotNull ExceptionalCallable<R, E> preNonFxTask, @NotNull Function<R, S> fxTask,
-            @NotNull Consumer<S> postNonFxTask, @NotNull Class<E> exceptionTypeDummy) throws E {
+            @NotNull Consumer<S> postNonFxTask, @Nullable Class<E> exceptionTypeDummy) throws E {
         AtomicReference<E> exception = new AtomicReference<>();
         ExceptionalCallable<Void, E> nonFxTask = () -> {
             R preTaskResult = preNonFxTask.call(exceptionTypeDummy);
