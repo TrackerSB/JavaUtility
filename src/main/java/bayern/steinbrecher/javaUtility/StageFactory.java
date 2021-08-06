@@ -1,5 +1,7 @@
 package bayern.steinbrecher.javaUtility;
 
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -16,13 +18,16 @@ public final class StageFactory {
     private final Image defaultIcon;
     private final Modality defaultModality;
     private final StageStyle defaultStageStyle;
+    private final String defaultStylesheetPath;
     private final Window defaultOwner;
 
     public StageFactory(@NotNull Modality defaultModality, @NotNull StageStyle defaultStageStyle,
-                        @Nullable Image defaultIcon, @Nullable Window defaultOwner) {
+                        @Nullable Image defaultIcon, @Nullable String defaultStylesheetPath,
+                        @Nullable Window defaultOwner) {
         this.defaultIcon = defaultIcon;
         this.defaultModality = defaultModality;
         this.defaultStageStyle = defaultStageStyle;
+        this.defaultStylesheetPath = defaultStylesheetPath;
         this.defaultOwner = defaultOwner;
     }
 
@@ -36,6 +41,12 @@ public final class StageFactory {
             stage.getIcons()
                     .add(defaultIcon);
         }
+        Scene scene = new Scene(new Label("Not content specified yet"));
+        if (defaultStylesheetPath != null) {
+            scene.getStylesheets()
+                    .add(defaultStylesheetPath);
+        }
+        stage.setScene(scene);
         return stage;
     }
 }

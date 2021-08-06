@@ -49,15 +49,13 @@ public final class DialogFactory {
             AlertType.ERROR, loadIcon("error.png")
     );
     private final Stage referenceStage;
-    private final String defaultStylesheetPath;
 
     public DialogFactory() {
-        this(new StageFactory(Modality.APPLICATION_MODAL, StageStyle.UTILITY, null, null), null);
+        this(new StageFactory(Modality.APPLICATION_MODAL, StageStyle.UTILITY, null, null, null));
     }
 
-    public DialogFactory(@NotNull StageFactory stageFactory, @Nullable String defaultStylesheetPath) {
+    public DialogFactory(@NotNull StageFactory stageFactory) {
         this.referenceStage = stageFactory.create();
-        this.defaultStylesheetPath = defaultStylesheetPath;
     }
 
     @NotNull
@@ -93,10 +91,10 @@ public final class DialogFactory {
         baseAlert.initOwner(referenceStage.getOwner());
         baseAlert.initModality(referenceStage.getModality());
         baseAlert.initStyle(referenceStage.getStyle());
-        if (defaultStylesheetPath != null) {
+        if (referenceStage.getScene() != null) {
             baseAlert.getDialogPane()
                     .getStylesheets()
-                    .addAll(defaultStylesheetPath);
+                    .addAll(referenceStage.getScene().getStylesheets());
         }
 
         return baseAlert;
