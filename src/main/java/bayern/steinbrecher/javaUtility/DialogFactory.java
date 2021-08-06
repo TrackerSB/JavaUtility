@@ -24,8 +24,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,34 +77,29 @@ public final class DialogFactory {
      */
     @NotNull
     private Alert createAlert(@NotNull Callable<Alert> alertCreation) throws DialogCreationException {
-        Alert alert;
-        if (Platform.isFxApplicationThread()) {
-            try {
-                alert = alertCreation.call();
-            } catch (Exception ex) {
-                throw new DialogCreationException(ex);
-            }
-        } else {
-            FutureTask<Alert> alertCreationTask = new FutureTask<>(alertCreation);
-            Platform.runLater(alertCreationTask);
-            try {
-                alert = alertCreationTask.get();
-            } catch (InterruptedException | ExecutionException ex) {
-                throw new DialogCreationException(ex);
-            }
-        }
+        Alert baseAlert = PlatformUtility.runLaterBlocking(
+                () -> {
+                    Alert alert;
+                    try {
+                        alert = alertCreation.call();
+                    } catch (Exception ex) {
+                        throw new DialogCreationException(ex);
+                    }
+                    alert.setGraphic(TYPE_ICONS.getOrDefault(alert.getAlertType(), null));
+                    return alert;
+                },
+                DialogCreationException.class);
 
-        Platform.runLater(() -> alert.setGraphic(TYPE_ICONS.getOrDefault(alert.getAlertType(), null)));
-
-        alert.initOwner(referenceStage.getOwner());
-        alert.initModality(referenceStage.getModality());
-        alert.initStyle(referenceStage.getStyle());
+        baseAlert.initOwner(referenceStage.getOwner());
+        baseAlert.initModality(referenceStage.getModality());
+        baseAlert.initStyle(referenceStage.getStyle());
         if (defaultStylesheetPath != null) {
-            alert.getDialogPane()
+            baseAlert.getDialogPane()
                     .getStylesheets()
                     .addAll(defaultStylesheetPath);
         }
-        return alert;
+
+        return baseAlert;
     }
 
     @NotNull
