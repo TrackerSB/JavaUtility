@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "org.jetbrains:annotations:19.0.0"
+    compileOnly 'org.jetbrains:annotations:21.0.1'
     implementation "bayern.steinbrecher:jsch:0.1.57"
 }
 
