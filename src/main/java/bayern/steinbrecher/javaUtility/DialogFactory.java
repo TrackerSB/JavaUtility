@@ -12,8 +12,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Window;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,42 +34,38 @@ import java.util.logging.Logger;
  * @author Stefan Huber
  * @since 0.18
  */
-public final class DialogGenerator {
+public final class DialogFactory {
 
     /**
      * Width/height of the alert type identifying icon.
      */
-    public static final int SIZE = 15;
-    private static final Logger LOGGER = Logger.getLogger(DialogGenerator.class.getName());
+    public static final int TYPE_ICON_SIZE = 15;
+    private static final Logger LOGGER = Logger.getLogger(DialogFactory.class.getName());
     private static final ResourceBundle RESOURCE_BUNDLE
             = ResourceBundle.getBundle("bayern.steinbrecher.javaUtility.dialog");
     private static final int NUMBER_USED_PARAMETERS = 3;
-    private static final Map<AlertType, ImageView> ICONS = Map.of(
+    private static final Map<AlertType, ImageView> TYPE_ICONS = Map.of(
             AlertType.CONFIRMATION, loadIcon("checked.png"),
             AlertType.INFORMATION, loadIcon("info.png"),
             AlertType.WARNING, loadIcon("warning.png"),
             AlertType.ERROR, loadIcon("error.png")
     );
-    private final Window defaultOwner;
-    private final Modality defaultModality;
-    private final StageStyle defaultStageStyle;
+    private final Stage referenceStage;
     private final String defaultStylesheetPath;
 
-    public DialogGenerator() {
-        this(null, Modality.APPLICATION_MODAL, StageStyle.UTILITY, null);
+    public DialogFactory() {
+        this(new StageFactory(Modality.APPLICATION_MODAL, StageStyle.UTILITY, null, null), null);
     }
 
-    public DialogGenerator(@Nullable Window defaultOwner, @NotNull Modality defaultModality,
-                           @NotNull StageStyle defaultStageStyle, @Nullable String defaultStylesheetPath) {
-        this.defaultOwner = defaultOwner;
-        this.defaultModality = defaultModality;
-        this.defaultStageStyle = defaultStageStyle;
+    public DialogFactory(@NotNull StageFactory stageFactory, @Nullable String defaultStylesheetPath) {
+        this.referenceStage = stageFactory.create();
         this.defaultStylesheetPath = defaultStylesheetPath;
     }
 
     @NotNull
     private static ImageView loadIcon(@NotNull String path) {
-        Image image = new Image(DialogGenerator.class.getResource(path).getPath(), SIZE, SIZE, true, true);
+        Image image = new Image(DialogFactory.class.getResource(path).getPath(), TYPE_ICON_SIZE,
+                TYPE_ICON_SIZE, true, true);
         ImageView imageView = new ImageView(image);
         imageView.setSmooth(true);
         return imageView;
@@ -82,7 +78,7 @@ public final class DialogGenerator {
      * @return The newly created {@link Alert}.
      */
     @NotNull
-    private Alert getAlert(@NotNull Callable<Alert> alertCreation) throws DialogCreationException {
+    private Alert createAlert(@NotNull Callable<Alert> alertCreation) throws DialogCreationException {
         Alert alert;
         if (Platform.isFxApplicationThread()) {
             try {
@@ -100,11 +96,11 @@ public final class DialogGenerator {
             }
         }
 
-        Platform.runLater(() -> alert.setGraphic(ICONS.getOrDefault(alert.getAlertType(), null)));
+        Platform.runLater(() -> alert.setGraphic(TYPE_ICONS.getOrDefault(alert.getAlertType(), null)));
 
-        alert.initOwner(defaultOwner);
-        alert.initModality(defaultModality);
-        alert.initStyle(defaultStageStyle);
+        alert.initOwner(referenceStage.getOwner());
+        alert.initModality(referenceStage.getModality());
+        alert.initStyle(referenceStage.getStyle());
         if (defaultStylesheetPath != null) {
             alert.getDialogPane()
                     .getStylesheets()
@@ -113,12 +109,19 @@ public final class DialogGenerator {
         return alert;
     }
 
+    @NotNull
+    public Alert createInteractiveAlert(
+            @NotNull Alert.AlertType type, @Nullable String message, @NotNull ButtonType... buttons)
+            throws DialogCreationException {
+        return createAlert(() -> new Alert(type, message, buttons));
+    }
+
     /**
      * Creates an {@link Alert} with given settings.
      *
      * @param alertType The type of the alert.
      * @param args      The arguments containing the content, title and the header. NOTE: The order is important. If you
-     *                  specify less elements or an element is {@code null} these elements will have the default
+     *                  specify fewer elements or an element is {@code null} these elements will have the default
      *                  value according to {@link Alert}. If you specify more elements they will be ignored.
      * @return The created {@link Alert}.
      * @throws DialogCreationException Thrown if the creation of the dialog got interrupted on the JavaFX main
@@ -136,7 +139,7 @@ public final class DialogGenerator {
                     NUMBER_USED_PARAMETERS);
         }
 
-        Alert alert = getAlert(() -> new Alert(alertType));
+        Alert alert = createAlert(() -> new Alert(alertType));
         int parameterCount = Math.min(args.length, NUMBER_USED_PARAMETERS);
         //CHECKSTYLE.OFF: MagicNumber - The JavaDoc explicitly describes these three possible parameters
         switch (parameterCount) {
@@ -160,10 +163,39 @@ public final class DialogGenerator {
     }
 
     @NotNull
-    public Alert createInteractiveAlert(
-            @NotNull Alert.AlertType type, @Nullable String message, @NotNull ButtonType... buttons)
+    public Alert createInfoAlert(@NotNull String... args) throws DialogCreationException {
+        return createConfirmationAlert(Alert.AlertType.INFORMATION, args);
+    }
+
+    @NotNull
+    public Alert createWarningAlert(@NotNull String... args) throws DialogCreationException {
+        return createConfirmationAlert(Alert.AlertType.WARNING, args);
+    }
+
+    @NotNull
+    public Alert createErrorAlert(@NotNull String... args) throws DialogCreationException {
+        return createConfirmationAlert(Alert.AlertType.ERROR, args);
+    }
+
+    @NotNull
+    public Alert createMessageAlert(@Nullable String message, @NotNull String... args)
             throws DialogCreationException {
-        return getAlert(() -> new Alert(type, message, buttons));
+        Alert alert = createConfirmationAlert(Alert.AlertType.INFORMATION, args);
+
+        TextArea messageArea = new TextArea(message);
+        messageArea.setEditable(false);
+        messageArea.setWrapText(true);
+
+        GridPane grid = new GridPane();
+        grid.addColumn(0, messageArea);
+        GridPane.setHgrow(messageArea, Priority.ALWAYS);
+        GridPane.setVgrow(messageArea, Priority.ALWAYS);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setExpandableContent(grid);
+        dialogPane.setExpanded(true);
+
+        return alert;
     }
 
     @NotNull
@@ -185,42 +217,6 @@ public final class DialogGenerator {
         GridPane.setVgrow(stacktraceArea, Priority.ALWAYS);
 
         alert.getDialogPane().setExpandableContent(grid);
-
-        return alert;
-    }
-
-    @NotNull
-    public Alert createWarningAlert(@NotNull String... args) throws DialogCreationException {
-        return createConfirmationAlert(Alert.AlertType.WARNING, args);
-    }
-
-    @NotNull
-    public Alert createErrorAlert(@NotNull String... args) throws DialogCreationException {
-        return createConfirmationAlert(Alert.AlertType.ERROR, args);
-    }
-
-    @NotNull
-    public Alert createInfoAlert(@NotNull String... args) throws DialogCreationException {
-        return createConfirmationAlert(Alert.AlertType.INFORMATION, args);
-    }
-
-    @NotNull
-    public Alert createMessageAlert(@Nullable String message, @NotNull String... args)
-            throws DialogCreationException {
-        Alert alert = createConfirmationAlert(Alert.AlertType.INFORMATION, args);
-
-        TextArea messageArea = new TextArea(message);
-        messageArea.setEditable(false);
-        messageArea.setWrapText(true);
-
-        GridPane grid = new GridPane();
-        grid.addColumn(0, messageArea);
-        GridPane.setHgrow(messageArea, Priority.ALWAYS);
-        GridPane.setVgrow(messageArea, Priority.ALWAYS);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setExpandableContent(grid);
-        dialogPane.setExpanded(true);
 
         return alert;
     }
