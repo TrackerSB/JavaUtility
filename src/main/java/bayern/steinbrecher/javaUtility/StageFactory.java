@@ -46,7 +46,10 @@ public final class StageFactory {
             scene.getStylesheets()
                     .add(defaultStylesheetPath);
         }
-        stage.setScene(scene);
+        PlatformUtility.runLaterBlocking(() -> {
+            stage.setScene(scene);
+            return null;
+        }, null);
         return stage;
     }
 }
