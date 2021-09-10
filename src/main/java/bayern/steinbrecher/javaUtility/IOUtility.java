@@ -4,6 +4,7 @@ import bayern.steinbrecher.jsch.ChannelExec;
 import javafx.concurrent.Task;
 import javafx.util.Pair;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -97,8 +98,11 @@ public final class IOUtility {
      */
     public static Pair<String, String> readChannelContinuously(ChannelExec channel, Charset charset)
             throws IOException {
-        StringBuilder outputBuffer = new StringBuilder();
-        StringBuilder errorBuffer = new StringBuilder();
+        /* NOTE 2021-09-10: Do not convert the received buffer content to a {@link String} directly since the buffer may
+         * end or begin with incomplete chars in case of multi-byte encodings (e.g. UTF-8).
+         */
+        ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
+        ByteArrayOutputStream errorBuffer = new ByteArrayOutputStream();
         InputStream inStream = channel.getInputStream();
         InputStream errStream = channel.getErrStream();
         byte[] tmp = new byte[DEFAULT_BUFFER_SIZE];
@@ -108,14 +112,14 @@ public final class IOUtility {
                 if (i < 0) {
                     break;
                 }
-                outputBuffer.append(new String(tmp, 0, i, charset));
+                outputBuffer.write(tmp, 0, i);
             }
             while (errStream.available() > 0) {
                 int i = errStream.read(tmp, 0, DEFAULT_BUFFER_SIZE);
                 if (i < 0) {
                     break;
                 }
-                errorBuffer.append(new String(tmp, 0, i, charset));
+                errorBuffer.write(tmp, 0, i);
             }
             if (channel.isClosed()) {
                 if ((inStream.available() > 0) || (errStream.available() > 0)) {
@@ -133,7 +137,7 @@ public final class IOUtility {
                 LOGGER.log(Level.WARNING, "The delay before the next read iteration was interrupted.", ex);
             }
         }
-        return new Pair<>(outputBuffer.toString(), errorBuffer.toString());
+        return new Pair<>(outputBuffer.toString(charset), errorBuffer.toString(charset));
     }
 
     /**
