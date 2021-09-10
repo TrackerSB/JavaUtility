@@ -8,12 +8,15 @@ plugins {
 group "bayern.steinbrecher"
 version "0.18-rc.13-SNAPSHOT"
 
+sourceCompatibility = 16
+targetCompatibility = "$sourceCompatibility" as Integer
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compileOnly 'org.jetbrains:annotations:21.0.1'
+    compileOnly 'org.jetbrains:annotations:22.0.0'
     implementation "bayern.steinbrecher:jsch:0.1.57"
 }
 
@@ -30,7 +33,7 @@ java {
 }
 
 javafx {
-    version = "15"
+    version = "$sourceCompatibility"
     modules = [
             "javafx.base",
             "javafx.controls",
