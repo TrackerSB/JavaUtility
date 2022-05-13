@@ -8,7 +8,7 @@ plugins {
 group "bayern.steinbrecher"
 version "0.19-rc.1-SNAPSHOT"
 
-sourceCompatibility = 16
+sourceCompatibility = 17
 targetCompatibility = "$sourceCompatibility" as Integer
 
 repositories {
