@@ -3,6 +3,7 @@ package bayern.steinbrecher.javaUtility;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
@@ -134,20 +135,20 @@ public final class DialogFactory {
         int parameterCount = Math.min(args.length, NUMBER_USED_PARAMETERS);
         //CHECKSTYLE.OFF: MagicNumber - The JavaDoc explicitly describes these three possible parameters
         switch (parameterCount) {
-        case 3:
-            alert.setHeaderText(args[2]);
-            //fall-through
-        case 2:
-            alert.setTitle(args[1]);
-            //fall-through
-        case 1:
-            alert.setContentText(args[0]);
-            //fall-through
-        case 0:
-            //No op
-            break;
-        default:
-            throw new IllegalArgumentException("At most three parameters can be passed. (content, title, header)");
+            case 3:
+                alert.setHeaderText(args[2]);
+                //fall-through
+            case 2:
+                alert.setTitle(args[1]);
+                //fall-through
+            case 1:
+                alert.setContentText(args[0]);
+                //fall-through
+            case 0:
+                //No op
+                break;
+            default:
+                throw new IllegalArgumentException("At most three parameters can be passed. (content, title, header)");
         }
         //CHECKSTYLE.ON: MagicNumber
         return alert;
@@ -239,5 +240,13 @@ public final class DialogFactory {
             }
         }
         return result;
+    }
+
+    public static void setDefaultButton(@NotNull Alert alert, @Nullable ButtonType defaultButton) {
+        for (ButtonType type : alert.getButtonTypes()) {
+            var button = (Button) alert.getDialogPane()
+                    .lookupButton(type);
+            button.setDefaultButton(type == defaultButton);
+        }
     }
 }
