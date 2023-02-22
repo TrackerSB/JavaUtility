@@ -1,6 +1,6 @@
 plugins {
     id "java-library"
-    id "org.openjfx.javafxplugin" version "0.0.9"
+    id "org.openjfx.javafxplugin" version "0.0.10"
     id "maven-publish"
     id "signing"
 }
@@ -8,15 +8,15 @@ plugins {
 group "bayern.steinbrecher"
 version "0.19-rc.2-SNAPSHOT"
 
-sourceCompatibility = 17
-targetCompatibility = "$sourceCompatibility" as Integer
+sourceCompatibility = 19
+targetCompatibility = 19
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compileOnly 'org.jetbrains:annotations:22.0.0'
+    compileOnly 'org.jetbrains:annotations:24.0.0'
     implementation "bayern.steinbrecher:jsch:0.1.57"
 }
 
